@@ -17,7 +17,6 @@ float compute_am(const float *x, unsigned int N) {
     for(i = 0; i < N; i++){
         sum += fabs(x[i]);
     }
-    // printf("%f\n", sum);
     return sum/N;
 }
 
@@ -26,10 +25,9 @@ float compute_zcr(const float *x, unsigned int N, float fm) {
     double sum = 0.0;
     for (i = 0; i < N; i++){
         if (sgn(x[i]) != sgn(x[i-1])){
-            sum += 1;
+            sum++;
         }
     }
-
     return fm/(2*(N-1))*sum;
 }
 
