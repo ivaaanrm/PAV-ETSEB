@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
     float *x;
     short *buffer;
     FILE  *fpWave;
+    FILE  *fpOut;
 
     if (argc != 2 && argc != 3) {
         fprintf(stderr, "Empleo: %s inputfile [outputfile]\n", argv[0]);
@@ -22,6 +23,15 @@ int main(int argc, char *argv[]) {
     if ((fpWave = abre_wave(argv[1], &fm)) == NULL) {
         fprintf(stderr, "Error al abrir el fichero WAVE de entrada %s (%s)\n", argv[1], strerror(errno));
         return -1;
+    }
+
+    if(argv[2] != NULL) {
+        
+        if ((fpOut = fopen(argv[2], "w")) == NULL) {
+            fprintf(stderr, "Error al abrir el fichero de salida %s (%s)\n", argv[2], strerror(errno));
+            return -1;
+        }
+
     }
 
     N = durTrm * fm;
@@ -35,9 +45,16 @@ int main(int argc, char *argv[]) {
     while (lee_wave(buffer, sizeof(*buffer), N, fpWave) == N) {
         for (int n = 0; n < N; n++) x[n] = buffer[n] / (float) (1 << 15);
 
-        printf("%d\t%f\t%f\t%f\n", trm, compute_power(x, N),
+        if(argv[2] != NULL) {
+            fprintf(fpOut,"%d\t%f\t%f\t%f\n", trm, compute_power(x, N),
                                         compute_am(x, N),
                                         compute_zcr(x, N, fm));
+        }
+        else{
+            printf("%d\t%f\t%f\t%f\n", trm, compute_power(x, N),
+                                        compute_am(x, N),
+                                        compute_zcr(x, N, fm));
+        }
         trm += 1;
     }
 
